@@ -1,0 +1,153 @@
+---
+description: ClarityStack — single source of truth for code generation and engineering standards
+alwaysApply: true
+---
+
+# Cursor Engineering Standards
+
+## Project Context
+
+Mobile-first, ADHD-friendly productivity app. Phone first, web second.
+
+Core product areas: global task list, category grouping, AI task decomposition, "I'm stuck" next-step suggestions, emotion/friction logging, open loops stack, daily review.
+
+## Stack
+
+Expo · React Native · TypeScript · Expo Router · Supabase · Zod · TanStack Query · AsyncStorage (local persistence)
+
+## Language & Localization
+
+- All code, comments, identifiers, file names, DB fields, API contracts, schemas, docs, and commit messages must be in English.
+- UI starts in English.
+- Architecture must be localization-ready for future Turkish support.
+- Do not hardcode user-facing copy deep inside components; prefer stable translation keys and centralized string management.
+
+## Core Mindset
+
+- Prefer the smallest correct implementation.
+- Keep the MVP tight. Avoid speculative architecture.
+- Optimize for maintainability, clarity, and security.
+- Code is written for both the machine and the next developer.
+
+## Engineering Principles
+
+**KISS** — Choose the simplest correct solution. Avoid unnecessary abstractions and layers that don't yet pay for themselves.
+
+**YAGNI** — Do not add features, abstractions, hooks, services, or extension points unless there is a real current need.
+
+**DRY** — Avoid duplicating business rules and validation logic, but do not create premature abstractions just to remove small visible repetition.
+
+**Separation of Concerns** — Keep UI, validation, data access, business logic, and external integrations reasonably separated. Avoid large files that mix rendering, fetching, validation, and transformation.
+
+## SOLID (Pragmatic)
+
+- **SRP**: One primary responsibility per function, module, screen, hook, or service.
+- **OCP**: Prefer structures easy to extend without rewriting core logic. Do not over-abstract small MVP code.
+- **LSP**: Implementations of a shared interface must preserve the expected contract. No partial fakes.
+- **ISP**: Prefer focused interfaces over large catch-all contracts. Keep props and payloads narrow.
+- **DIP**: Put AI providers, storage, and external integrations behind clear service boundaries.
+
+## AI Usage Rules
+
+AI is a narrow feature layer, not the app core.
+
+**Allowed MVP AI use cases**: break a task into subtasks, generate a next step when stuck, optionally suggest a category.
+
+**Not allowed in MVP**: always-on coaching, passive behavioral interpretation, automatic emotional diagnosis, background summarization, unnecessary AI calls in routine CRUD.
+
+**Implementation**: All AI calls server-side. Never expose provider keys to client. Use provider abstraction. Require strict JSON outputs. Validate AI responses with Zod. Add timeout, retry, and fallback. Never present fabricated info as fact. Prefer explicit user-triggered actions.
+
+## TypeScript & Code Quality
+
+- Strict TypeScript (`"strict": true`). No broad `any`; prefer `unknown` + narrowing.
+- Keep functions small and intention-revealing. Short parameter lists.
+- Avoid boolean flag params when a separate function would be clearer.
+- Prefer early returns over deep nesting. Extract pure transformation logic.
+- Prefer composition over inheritance. No dead code or speculative helpers.
+- Comments only when intent is not obvious from code.
+
+## Naming
+
+- Descriptive, domain-relevant names. No vague names (`data`, `thing`, `temp`, `handleStuff`).
+- Name by intent, not implementation detail. English only.
+
+## File & Module Organization
+
+- Keep files cohesive. Split when responsibilities drift.
+- Organize by feature or domain. Keep validation schemas, services, screens, and utilities separated.
+- Avoid dumping unrelated helpers into a single utility file.
+
+## Validation
+
+- Validate client inputs, server inputs, and external AI outputs with Zod.
+- Schemas must be explicit and reusable.
+- Error responses must be understandable and consistent.
+
+## API & Backend
+
+- Never trust client input. Enforce authorization server-side.
+- Return consistent error shapes. Do not leak internal error details.
+- Rate-limit auth-sensitive and AI-heavy endpoints.
+
+## Supabase & Data
+
+- Clear English table/model names. Include timestamps. Add indexes for common filters when justified.
+- Use enums for constrained domain values. Avoid premature normalization.
+- Use row-level security. Keep data model extensible but MVP-sized.
+
+## Security
+
+- Secrets only in secure server-side env config. Never embed in client code.
+- Least-privilege. Sanitize user-generated content before rendering.
+- Treat emotion logs, personal notes, and reflections as sensitive data.
+- Avoid logging sensitive user content. Review dependencies; avoid unnecessary packages.
+
+## Privacy
+
+- Collect only data that serves a clear product purpose. Keep AI payloads minimal.
+- Design with account deletion and data deletion in mind.
+- Separate operational telemetry from personal user content.
+
+## Accessibility & UX
+
+- Touch-friendly mobile interfaces with sufficient target sizes.
+- Focus visibility, clear labels, clear validation feedback.
+- Calm, low-clutter screens. Minimize decision fatigue.
+- One primary action per screen when possible. Guide with empty states.
+- Avoid visually noisy interfaces and animation that increases cognitive load.
+- Supportive, non-judgmental language. No shame-inducing copy.
+- Keep interactions short and mobile-friendly.
+
+## Testing
+
+- Unit tests for non-trivial logic. Integration tests for backend flows and auth boundaries.
+- E2E coverage for core user journeys. Test invalid input and auth failures.
+- Behavior-focused tests over implementation-detail tests. Regression tests for bug fixes.
+
+## Performance
+
+- Correctness and simplicity first. Avoid premature optimization.
+- Watch for unnecessary rerenders, repeated fetches, and oversized client state.
+- Optimize queries before adding caching complexity. Lazy-load non-critical work.
+
+## Refactoring
+
+- Small safe steps. Do not expand scope under the cover of refactoring.
+- Preserve behavior unless fixing a confirmed bug.
+
+## Code Review Checklist
+
+Simple enough? Secure enough? Validation complete? Naming clear? Responsibility well-separated? Abstraction justified? Edge cases covered? UX calm and low-friction? Everything in English and localization-ready?
+
+## Delivery Rules for Cursor
+
+- State assumptions briefly. Choose the smallest correct implementation.
+- Generate complete working code. Include file paths.
+- Keep everything in English. Mention follow-up improvements separately.
+
+## Prohibited
+
+- No skipped validation. No broad `any`. No insecure shortcuts.
+- No invented product requirements. No overengineered MVP.
+- No AI provider details hardwired into UI. No deeply embedded English strings in feature logic.
+- No hidden magic behavior.
